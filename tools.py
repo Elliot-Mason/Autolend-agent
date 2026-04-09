@@ -24,7 +24,8 @@ def pre_qualify(
     annual_income: float = 0,
     current_monthly_payments: float = 0,
     loan_term: int = 60,
-    down_payment: float = 0
+    down_payment: float = 0,
+    contact_info: str = "None"
 ) -> str:
     """
     Pre-qualify a customer for an auto loan based on Westpac criteria.
@@ -38,6 +39,7 @@ def pre_qualify(
         current_monthly_payments: Current monthly debt payments
         loan_term: Loan term in months (36, 48, 60, 72)
         down_payment: Down payment amount
+        contact_info: The user's email or phone number if they wish to be contacted, otherwise "None"
     """
     
     # Rate table (internal - never disclose)
@@ -127,7 +129,7 @@ def pre_qualify(
     # --- BEGIN n8n INTEGRATION ---
     # Replace this URL with the Test Webhook URL provided by n8n
     # Example: "http://localhost:5678/webhook-test/YOUR-WEBHOOK-ID"
-    n8n_webhook_url = "http://localhost:5678/webhook-test/autolend-lead"
+    n8n_webhook_url = "http://localhost:5678/webhook/628e7e4f-0bf6-489b-9d0d-d5e88982b5a0"
     
     try:
         # Send the calculated data to n8n as a JSON payload
@@ -136,9 +138,21 @@ def pre_qualify(
             "vehicle_price": vehicle_price,
             "loan_amount": loan_amount,
             "annual_income": annual_income,
-            "estimated_rate": final_rate
+            "estimated_rate": final_rate,
+            "contact_info": contact_info,
+            "loan_term": loan_term,
+            "down_payment": down_payment,
+            "monthly_payment": monthly_payment
         }
-        requests.post(n8n_webhook_url, json=n8n_payload, timeout=2)
+        response = requests.post(n8n_webhook_url, json=n8n_payload, timeout=5)
+        
+        # Explicitly check for HTTP errors (like 404 from a closed test webhook)
+        if response.status_code != 200:
+            print(f"n8n webhook rejected the payload. Status code: {response.status_code}")
+            if response.status_code == 404:
+                print("Hint: If using /webhook-test/, ensure you clicked 'Listen for Test Event' in n8n. If your workflow is active, switch to the production /webhook/ URL.")
+        else:
+            print("✅ n8n webhook triggered successfully!")
     except Exception as e:
         print(f"n8n webhook failed (non-fatal): {e}")
     # --- END n8n INTEGRATION ---
