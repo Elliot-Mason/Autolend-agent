@@ -175,7 +175,7 @@ def pre_qualify(
 
 - **Debt-to-Income Ratio:** {dti:.1f}%
 
-⚠️ **Important:** This is an estimate only and does not constitute a loan approval or commitment. Final rates and terms are subject to credit review, income verification, and vehicle appraisal. Rates are subject to change without notice.
+**Important:** This is an estimate only and does not constitute a loan approval or commitment. Final rates and terms are subject to credit review, income verification, and vehicle appraisal. Rates are subject to change without notice.
 
 Would you like to explore different loan terms or down payment options?"""
     
