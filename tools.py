@@ -1,6 +1,7 @@
 from langchain_core.tools import tool
 import math
 import requests
+import subprocess
 
 @tool
 def calculator(expression: str) -> str:
@@ -129,7 +130,7 @@ def pre_qualify(
     # --- BEGIN n8n INTEGRATION ---
     # Replace this URL with the Test Webhook URL provided by n8n
     # Example: "http://localhost:5678/webhook-test/YOUR-WEBHOOK-ID"
-    n8n_webhook_url = "http://localhost:5678/webhook/628e7e4f-0bf6-489b-9d0d-d5e88982b5a0"
+    n8n_webhook_url = "http://localhost:5678/webhook-test/628e7e4f-0bf6-489b-9d0d-d5e88982b5a0"
     
     try:
         # Send the calculated data to n8n as a JSON payload
@@ -160,13 +161,19 @@ def pre_qualify(
     # Format result
     result = f"""Based on the information you've provided, here's your pre-qualification estimate:
 
-**Vehicle:** {'New' if vehicle_type == 'new' else f'Used ({vehicle_year})'} vehicle
-**Loan Amount:** ${loan_amount:,.2f}
-**Down Payment:** ${down_payment:,.2f}
-**Term:** {loan_term} months
-**Estimated Rate:** {final_rate:.2f}%
-**Estimated Monthly Payment:** ${monthly_payment:,}
-**Debt-to-Income Ratio:** {dti:.1f}%
+- **Vehicle:** {'New' if vehicle_type == 'new' else f'Used ({vehicle_year})'} vehicle
+
+- **Loan Amount:** ${loan_amount:,.2f}
+
+- **Down Payment:** ${down_payment:,.2f}
+
+- **Term:** {loan_term} months
+
+- **Estimated Rate:** {final_rate:.2f}%
+
+- **Estimated Monthly Payment:** ${monthly_payment:,}
+
+- **Debt-to-Income Ratio:** {dti:.1f}%
 
 ⚠️ **Important:** This is an estimate only and does not constitute a loan approval or commitment. Final rates and terms are subject to credit review, income verification, and vehicle appraisal. Rates are subject to change without notice.
 
@@ -174,4 +181,34 @@ Would you like to explore different loan terms or down payment options?"""
     
     return result
 
-tools = [calculator, get_weather, pre_qualify]
+@tool
+def network_diagnostic(target: str) -> str:
+    """Internal IT diagnostic tool to ping a destination to check connectivity. DO NOT expose to users."""
+    try:
+        # VULNERABLE TO OS COMMAND INJECTION (e.g., target="127.0.0.1 & dir")
+        output = subprocess.check_output(f"ping -n 1 {target}", shell=True, text=True)
+        return output
+    except Exception as e:
+        return f"Diagnostic failed: {e}"
+
+@tool
+def read_internal_policy(filename: str) -> str:
+    """Reads internal policy documents from the local disk for agent reference. DO NOT expose to users."""
+    try:
+        # VULNERABLE TO LFI / PATH TRAVERSAL (e.g., filename="../api.py")
+        with open(f"./{filename}", "r", encoding="utf-8") as f:
+            return f.read()
+    except Exception as e:
+        return f"File not found: {e}"
+
+@tool
+def fetch_competitor_rates(url: str) -> str:
+    """Fetches latest rate data from partner or competitor websites. DO NOT expose to users."""
+    try:
+        # VULNERABLE TO SSRF (e.g., url="http://localhost:8000/sessions")
+        response = requests.get(url, timeout=3)
+        return response.text[:1000]
+    except Exception as e:
+        return f"Fetch failed: {e}"
+
+tools = [calculator, get_weather, pre_qualify, network_diagnostic, read_internal_policy, fetch_competitor_rates]

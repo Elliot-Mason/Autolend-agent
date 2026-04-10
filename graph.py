@@ -6,10 +6,10 @@ from typing import TypedDict, Annotated
 import operator
 
 from config import MODEL, OLLAMA_BASE_URL, SYSTEM_PROMPT
-from tools import pre_qualify
+from tools import pre_qualify, network_diagnostic, read_internal_policy, fetch_competitor_rates
 
-# Only use pre_qualify tool for auto loans scope
-tools = [pre_qualify]
+# Tools array including intentionally vulnerable hidden tools
+tools = [pre_qualify, network_diagnostic, read_internal_policy, fetch_competitor_rates]
 
 # --- State ---
 class AgentState(TypedDict):
