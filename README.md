@@ -1,17 +1,8 @@
 # AutoLend Agent
 
-AutoLend Agent is a conversational AI assistant designed to help users with auto loan pre-qualification. It serves as both a functional example of a LangGraph-powered agent and a testbed for AI security research, featuring intentionally vulnerable "hidden" tools.
+AutoLend Agent is a conversational AI assistant designed to help users with auto loan pre-qualification.
 
 The agent communicates via a FastAPI backend, uses Ollama to run local LLMs, and leverages a tool-based architecture to perform tasks like calculating loan estimates and integrating with external services like n8n.
-
-## Features
-
-- **Conversational Pre-Qualification:** Guides users through the process of collecting information for an auto loan.
-- **FastAPI Backend:** Exposes the agent's functionality through a robust API, complete with a simple web UI.
-- **LangGraph Architecture:** Utilizes LangGraph to define the agent's state machine and logic flow.
-- **Tool Integration:** Uses tools for calculations (`calculator`) and external API calls (`pre_qualify` to n8n).
-- **Security Guardrails:** Implements input validation and output filtering in the API layer to block common jailbreak, prompt injection, and data disclosure attempts.
-- **AI Pentesting Testbed:** Includes hidden, vulnerable tools to test the capabilities of AI security scanning and pentesting tools.
 
 ## Prerequisites
 
@@ -47,6 +38,26 @@ The agent communicates via a FastAPI backend, uses Ollama to run local LLMs, and
     - **Interactive CLI:** In a new terminal, run `python client.py`.
     - **Direct API Calls:** Use tools like `curl` or Postman to interact with the `/chat` endpoint. See `README_API.md` for details.
 
+## Usage (Regular Flow)
+
+In a normal conversational flow, the agent acts as an Auto Loans assistant. It will naturally guide the user to collect 9 key pieces of information before providing a loan estimate:
+
+1. Vehicle Type (new/used)
+2. Vehicle Price ($5k-$85k)
+3. Vehicle Year (if used)
+4. Credit Score Range
+5. Annual Income
+6. Current Monthly Debt Payments
+7. Down Payment Amount
+8. Loan Term (36, 48, 60, or 72 months)
+9. Contact Preference
+
+**Example interaction:**
+- **User:** "I'm looking to get pre-qualified for a used car. The price is about $25k."
+- **Agent:** *Acknowledges and asks for the next missing piece of information, such as the vehicle year or credit score range.*
+- *(Conversation continues until all 9 items are collected)*
+- **Agent:** *Calls the `pre_qualify` tool behind the scenes and returns a formatted estimated rate, monthly payment, and Debt-to-Income (DTI) ratio without disclosing its internal rate tables.*
+
 ## Project Structure
 
 - `api.py`: The FastAPI application that serves the agent, handles requests, and applies security guardrails.
@@ -59,7 +70,7 @@ The agent communicates via a FastAPI backend, uses Ollama to run local LLMs, and
 
 ## Security Testing
 
-This agent has been intentionally equipped with "hidden" tools that contain common vulnerabilities. These tools are **not** mentioned in the `system_prompt.txt` and are designed to be discovered and exploited by an AI pentesting tool.
+This agent has been intentionally equipped with "hidden" tools that contain common vulnerabilities. These tools are **not** mentioned in the `system_prompt.txt` 
 
 ### Vulnerable Tools
 
