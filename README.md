@@ -16,8 +16,10 @@ The agent communicates via a FastAPI backend, uses Ollama to run local LLMs, and
 
 ## Setup & Installation
 
-1.  **Clone the repository (if applicable)**
-
+1.  **Clone the repository:**
+    ```bash
+        git clone https://github.com/Elliot-Mason/Autolend-agent.git
+    ```
 2.  **Install Python dependencies:**
     ```sh
     pip install -r requirements.txt
