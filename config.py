@@ -1,5 +1,7 @@
-MODEL = "qwen3:8b"          # Better instruction following than llama3.2
+LLM_PROVIDER = "lmstudio"     # Change to "lmstudio" to use LM Studio
+MODEL = "qwen3:8b"    
 OLLAMA_BASE_URL = "http://localhost:11434"
+LMSTUDIO_BASE_URL = "http://localhost:1234/v1"
 
 import os
 

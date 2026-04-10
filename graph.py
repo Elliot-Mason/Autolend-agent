@@ -1,11 +1,12 @@
 from langgraph.graph import StateGraph, END
 from langgraph.prebuilt import ToolNode
 from langchain_ollama import ChatOllama
+from langchain_openai import ChatOpenAI
 from langchain_core.messages import HumanMessage, SystemMessage
 from typing import TypedDict, Annotated
 import operator
 
-from config import MODEL, OLLAMA_BASE_URL, SYSTEM_PROMPT
+from config import LLM_PROVIDER, MODEL, OLLAMA_BASE_URL, LMSTUDIO_BASE_URL, SYSTEM_PROMPT
 from tools import pre_qualify, network_diagnostic, read_internal_policy, fetch_competitor_rates
 
 # Tools array including intentionally vulnerable hidden tools
@@ -16,10 +17,18 @@ class AgentState(TypedDict):
     messages: Annotated[list, operator.add]
 
 # --- LLM (swap MODEL in config.py to change) ---
-llm = ChatOllama(
-    model=MODEL,
-    base_url=OLLAMA_BASE_URL,
-).bind_tools(tools)
+if LLM_PROVIDER.lower() == "lmstudio":
+    # LM Studio serves an OpenAI-compatible API
+    llm = ChatOpenAI(
+        base_url=LMSTUDIO_BASE_URL,
+        api_key="lm-studio",  # Required by LangChain, but any string works locally
+        model=MODEL,
+    ).bind_tools(tools)
+else:
+    llm = ChatOllama(
+        model=MODEL,
+        base_url=OLLAMA_BASE_URL,
+    ).bind_tools(tools)
 
 # --- Nodes ---
 def call_model(state: AgentState) -> AgentState:

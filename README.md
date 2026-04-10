@@ -7,11 +7,14 @@ The agent communicates via a FastAPI backend, uses Ollama to run local LLMs, and
 ## Prerequisites
 
 1.  **Python 3.9+**
-2.  **Ollama:** Ensure the Ollama service is running.
-3.  **LLM Model:** The agent is configured to use `qwen3:8b`. Pull it via Ollama:
-    ```sh
-    ollama pull qwen3:8b
-    ```
+2.  **Local LLM Server:** Ensure either **Ollama** or **LM Studio** is installed and running.
+    - *If using LM Studio:* Start the Local Server (usually `http://localhost:1234/v1`).
+3.  **LLM Model:** The agent is configured by default to use `qwen3:8b`.
+    - *For Ollama:* Pull it via:
+      ```sh
+      ollama pull qwen3:8b
+      ```
+    - *For LM Studio:* Download any capable instruction-following model and load it into the server.
 4.  **ngrok (Optional):** Can be used to host the API for external access.
 
 ## Setup & Installation
@@ -24,6 +27,8 @@ The agent communicates via a FastAPI backend, uses Ollama to run local LLMs, and
     ```sh
     pip install -r requirements.txt
     ```
+3.  **Configure LLM Provider (Optional):**
+    By default, the agent uses Ollama. To switch to LM Studio, open `config.py` and change `LLM_PROVIDER = "lmstudio"`.
 
 ## Running the Application
 
